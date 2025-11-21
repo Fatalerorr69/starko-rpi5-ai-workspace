@@ -1,708 +1,540 @@
-<!DOCTYPE html>
+
+[A[3~
+[A<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starko RPi5 AI Workspace - Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <title>Starko AI Workspace 4.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ZÁKLADNÍ STYLY - zkráceno pro přehlednost */
         :root {
-            --starko-primary: #6F9CF4;
-            --starko-secondary: #4FC1FF;
-            --starko-accent: #D89CFF;
-            --starko-success: #8FCE6C;
-            --starko-warning: #FFB86C;
-            --starko-danger: #FF6B6B;
-            --starko-dark: #0D0F14;
-            --starko-darker: #0A0B0F;
-            --starko-light: #1A1D22;
-            --starko-lighter: #252A32;
-            --starko-text: #E4E8EF;
-            --starko-text-secondary: #AAB2C0;
+            --primary: #4361ee; --secondary: #3f37c9; --success: #4cc9f0;
+            --warning: #f72585; --danger: #e63946; --dark: #1d3557;
+            --bg-dark: #0f172a; --bg-darker: #0a0f1c;
         }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--starko-dark) 0%, var(--starko-darker) 100%);
-            color: var(--starko-text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            background: rgba(26, 29, 34, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 25px;
-            border: 1px solid var(--starko-lighter);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        
-        .header h1 {
-            font-size: 2.8em;
-            background: linear-gradient(135deg, var(--starko-primary), var(--starko-accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-        
-        .header .subtitle {
-            color: var(--starko-text-secondary);
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, var(--starko-light), var(--starko-lighter));
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--starko-primary), var(--starko-accent));
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-        }
-        
-        .stat-card.cpu::before { background: var(--starko-primary); }
-        .stat-card.memory::before { background: var(--starko-success); }
-        .stat-card.disk::before { background: var(--starko-warning); }
-        .stat-card.temperature::before { background: var(--starko-danger); }
-        
-        .stat-value {
-            font-size: 2.2em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: var(--starko-text-secondary);
-            font-size: 0.9em;
-        }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .main-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        
-        .panel {
-            background: rgba(26, 29, 34, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid var(--starko-lighter);
-        }
-        
-        .panel-header {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .panel-title {
-            font-size: 1.4em;
-            font-weight: 600;
-            color: var(--starko-text);
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, var(--starko-primary), var(--starko-secondary));
+            background: var(--bg-dark);
             color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--dark) 0%, var(--bg-darker) 100%);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .widget {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(111, 156, 244, 0.3);
+        .widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            border-color: var(--primary);
         }
         
-        .btn-success { background: linear-gradient(135deg, var(--starko-success), #6BCF7F); }
-        .btn-warning { background: linear-gradient(135deg, var(--starko-warning), #FFA94D); }
-        .btn-danger { background: linear-gradient(135deg, var(--starko-danger), #FF8787); }
-        
-        .projects-list {
-            display: grid;
-            gap: 15px;
-        }
-        
-        .project-item {
-            background: var(--starko-light);
+        .profile-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid var(--starko-primary);
-            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+            cursor: pointer;
         }
         
-        .project-item:hover {
-            background: var(--starko-lighter);
+        .profile-card:hover {
+            background: rgba(255,255,255,0.12);
             transform: translateX(5px);
         }
         
-        .project-name {
-            font-weight: 600;
-            margin-bottom: 5px;
+        .profile-card.active {
+            border-left-color: var(--warning);
+            background: rgba(247, 37, 133, 0.1);
         }
         
-        .project-meta {
-            color: var(--starko-text-secondary);
-            font-size: 0.9em;
-        }
-        
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-        
-        .action-btn {
-            background: var(--starko-light);
-            border: 1px solid var(--starko-lighter);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .action-btn:hover {
-            background: var(--starko-lighter);
-            border-color: var(--starko-primary);
-            transform: translateY(-3px);
-        }
-        
-        .action-icon {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: var(--starko-light);
-            border-radius: 20px;
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-            border: 1px solid var(--starko-lighter);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--starko-text);
-            font-weight: 600;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--starko-lighter);
-            border-radius: 10px;
-            background: var(--starko-dark);
-            color: var(--starko-text);
-            font-size: 1em;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--starko-primary);
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--starko-text-secondary);
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: var(--starko-dark);
-            border-radius: 3px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--starko-primary), var(--starko-accent));
-            transition: width 0.3s ease;
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-        }
+        .clickable { cursor: pointer; transition: all 0.2s; }
+        .clickable:hover { transform: scale(1.05); }
+        .clickable:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🤖 Starko RPi5 AI Workspace</h1>
-            <div class="subtitle">Kompletní vývojové prostředí s AI integrací</div>
-            <div class="quick-actions">
-                <div class="action-btn" onclick="showModal('createProjectModal')">
-                    <div class="action-icon">➕</div>
-                    <div>Nový Projekt</div>
-                </div>
-                <div class="action-btn" onclick="installVSCodeExtensions()">
-                    <div class="action-icon">🔧</div>
-                    <div>Rozšíření</div>
-                </div>
-                <div class="action-btn" onclick="createBackup()">
-                    <div class="action-icon">💾</div>
-                    <div>Záloha</div>
-                </div>
-                <div class="action-btn" onclick="showModal('aiGeneratorModal')">
-                    <div class="action-icon">🤖</div>
-                    <div>AI Generátor</div>
-                </div>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header" style="padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center;">
+            <h2 style="background: linear-gradient(45deg, var(--success), var(--warning)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Starko AI 4.0
+            </h2>
+            <div style="background: rgba(76, 201, 240, 0.2); border: 1px solid var(--success); color: var(--success); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; margin: 10px 0;">
+                ONLINE
             </div>
         </div>
-
-        <div class="stats-grid" id="systemStats">
-            <div class="stat-card cpu">
-                <div class="stat-value" id="cpuUsage">0%</div>
-                <div class="stat-label">Využití CPU</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="cpuProgress" style="width: 0%"></div>
-                </div>
+        
+        <div class="sidebar-menu" style="padding: 20px 0;">
+            <div class="menu-item clickable" data-section="dashboard" style="padding: 15px 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--success); background: rgba(255,255,255,0.1);">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
             </div>
-            <div class="stat-card memory">
-                <div class="stat-value" id="memoryUsage">0%</div>
-                <div class="stat-label">Využití RAM</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="memoryProgress" style="width: 0%"></div>
-                </div>
+            <div class="menu-item clickable" data-section="profiles" style="padding: 15px 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid transparent;">
+                <i class="fas fa-sliders-h"></i>
+                <span>Profily</span>
             </div>
-            <div class="stat-card disk">
-                <div class="stat-value" id="diskUsage">0%</div>
-                <div class="stat-label">Využití Disku</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="diskProgress" style="width: 0%"></div>
-                </div>
+            <div class="menu-item clickable" data-section="performance" style="padding: 15px 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid transparent;">
+                <i class="fas fa-microchip"></i>
+                <span>Výkon</span>
             </div>
-            <div class="stat-card temperature">
-                <div class="stat-value" id="temperature">0°C</div>
-                <div class="stat-label">Teplota CPU</div>
+            <div class="menu-item clickable" data-section="security" style="padding: 15px 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid transparent;">
+                <i class="fas fa-shield-alt"></i>
+                <span>Bezpečnost</span>
+            </div>
+            {% if user.role == 'admin' %}
+            <div class="menu-item clickable" data-section="users" style="padding: 15px 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid transparent;">
+                <i class="fas fa-users"></i>
+                <span>Správa uživatelů</span>
+            </div>
+            {% endif %}
+            <div class="menu-item clickable" data-section="ai" style="padding: 15px 25px; display: flex; align-items: center; gap: 15px; border-left: 4px solid transparent;">
+                <i class="fas fa-robot"></i>
+                <span>AI Asistent</span>
             </div>
         </div>
-
-        <div class="dashboard-grid">
-            <div class="main-panel">
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title">📂 Projekty</div>
-                        <button class="btn" onclick="showModal('createProjectModal')">Nový Projekt</button>
-                    </div>
-                    <div class="projects-list" id="projectsList">
-                        <div class="loading">Načítání projektů...</div>
+    </div>
+    
+    <!-- HLAVNÍ OBSAH -->
+    <div class="main-content">
+        <!-- HLAVIČKA -->
+        <div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 25px; background: rgba(255,255,255,0.05); border-radius: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);">
+            <div>
+                <h1 style="font-size: 2.2rem; background: linear-gradient(45deg, var(--success), var(--warning)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Starko AI Workspace 4.0
+                </h1>
+                <p style="color: #a0a0a0;">Rozšířený dashboard pro správu workspace</p>
+            </div>
+            <div class="user-info" style="display: flex; align-items: center; gap: 15px;">
+                <div class="user-avatar" style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(45deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                    {{ user.username[0] | upper }}
+                </div>
+                <div>
+                    <div style="font-weight: 600;">{{ user.username }}</div>
+                    <div style="font-size: 0.9rem; color: var(--success);">{{ user.role }}</div>
+                </div>
+                <a href="{{ url_for('logout') }}" style="margin-left: 15px; padding: 8px 16px; background: rgba(230, 57, 70, 0.2); border: 1px solid var(--danger); border-radius: 8px; color: var(--danger); text-decoration: none; transition: all 0.3s;" 
+                   onmouseover="this.style.background='rgba(230, 57, 70, 0.4)'" 
+                   onmouseout="this.style.background='rgba(230, 57, 70, 0.2)'">
+                    Odhlásit
+                </a>
+            </div>
+        </div>
+        
+        <!-- RYCHLÝ PŘEHLED -->
+        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <!-- STATISTIKY SYSTÉMU -->
+            <div class="widget">
+                <div class="widget-header" style="padding: 20px; background: rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div class="widget-title" style="font-size: 1.2rem; font-weight: 600; color: var(--success);">
+                        🖥️ Stav Systému
                     </div>
                 </div>
-                
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title">📊 Výkon Systému</div>
+                <div class="widget-content" style="padding: 20px;">
+                    <div class="progress-container" style="margin: 15px 0;">
+                        <div class="progress-label" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>CPU</span>
+                            <span id="cpu-value">0%</span>
+                        </div>
+                        <div class="progress-bar" style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                            <div class="progress-fill cpu-progress" style="height: 100%; border-radius: 10px; transition: width 0.5s ease; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%;"></div>
+                        </div>
                     </div>
-                    <div id="performanceChart" style="height: 300px;"></div>
+                    
+                    <div class="progress-container" style="margin: 15px 0;">
+                        <div class="progress-label" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>RAM</span>
+                            <span id="ram-value">0%</span>
+                        </div>
+                        <div class="progress-bar" style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                            <div class="progress-fill ram-progress" style="height: 100%; border-radius: 10px; transition: width 0.5s ease; background: linear-gradient(90deg, var(--success), #2ecc71); width: 0%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;">
+                        <div class="stat-card clickable" style="background: rgba(255,255,255,0.08); border-radius: 10px; padding: 15px; text-align: center;">
+                            <i class="fas fa-thermometer-half" style="color: var(--warning);"></i>
+                            <div class="stat-value" id="temp-value" style="font-size: 1.5rem; font-weight: 700; margin: 8px 0;">0°C</div>
+                            <div class="stat-label" style="font-size: 0.8rem; color: #a0a0a0;">Teplota</div>
+                        </div>
+                        
+                        <div class="stat-card clickable" style="background: rgba(255,255,255,0.08); border-radius: 10px; padding: 15px; text-align: center;">
+                            <i class="fas fa-users" style="color: var(--success);"></i>
+                            <div class="stat-value" id="users-value" style="font-size: 1.5rem; font-weight: 700; margin: 8px 0;">0</div>
+                            <div class="stat-label" style="font-size: 0.8rem; color: #a0a0a0;">Uživatelé</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="side-panel">
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title">⚡ Rychlé Akce</div>
+            <!-- SYSTÉMOVÉ PROFILY -->
+            <div class="widget">
+                <div class="widget-header" style="padding: 20px; background: rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div class="widget-title" style="font-size: 1.2rem; font-weight: 600; color: var(--success);">
+                        🎯 Systémové Profily
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <button class="btn" onclick="openVSCode()">🔮 Otevřít VS Code</button>
-                        <button class="btn btn-success" onclick="openTerminal()">💻 Otevřít Terminal</button>
-                        <button class="btn btn-warning" onclick="runTests()">🧪 Spustit Testy</button>
-                        <button class="btn btn-danger" onclick="showModal('settingsModal')">⚙️ Nastavení</button>
+                </div>
+                <div class="widget-content" style="padding: 20px;">
+                    <div class="profiles-container" id="profiles-container" style="display: grid; gap: 15px; max-height: 300px; overflow-y: auto;">
+                        <!-- Naplněno JavaScriptem -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI ASISTENT -->
+            <div class="widget">
+                <div class="widget-header" style="padding: 20px; background: rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div class="widget-title" style="font-size: 1.2rem; font-weight: 600; color: var(--success);">
+                        🤖 AI Asistent
+                    </div>
+                </div>
+                <div class="widget-content" style="padding: 20px;">
+                    <div class="chat-container" style="display: flex; flex-direction: column; height: 200px;">
+                        <div class="chat-messages" id="chat-messages" style="flex: 1; overflow-y: auto; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 10px; font-size: 0.9rem;">
+                            <div class="message" style="display: flex; margin-bottom: 10px;">
+                                <div class="message-avatar" style="width: 25px; height: 25px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; margin-right: 10px;">AI</div>
+                                <div class="message-content" style="background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 12px; max-width: 80%;">
+                                    Ahoj! Jsem váš AI asistent. Jak vám mohu pomoci?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input" style="display: flex; gap: 10px;">
+                            <input type="text" id="chat-input" placeholder="Zeptejte se..." style="flex: 1; padding: 10px; border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; background: rgba(255,255,255,0.1); color: white; outline: none;">
+                            <button id="send-message" style="padding: 10px 15px; border: none; border-radius: 20px; background: var(--primary); color: white; cursor: pointer;">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SPRÁVA UŽIVATELŮ (pouze pro adminy) -->
+        {% if user.role == 'admin' %}
+        <div class="widget" id="users-section" style="display: none;">
+            <div class="widget-header" style="padding: 20px; background: rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <div class="widget-title" style="font-size: 1.2rem; font-weight: 600; color: var(--success);">
+                    👥 Správa Uživatelů
+                </div>
+            </div>
+            <div class="widget-content" style="padding: 20px;">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">Vytvořit nového uživatele</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="new-username" placeholder="Uživatelské jméno" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
+                        <input type="password" id="new-password" placeholder="Heslo" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
+                        <select id="new-role" style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
+                            <option value="user">Uživatel</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <button onclick="createUser()" style="padding: 12px 20px; background: var(--success); border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">
+                            Vytvořit
+                        </button>
                     </div>
                 </div>
                 
-                <div class="panel">
-                    <div class="panel-header">
-                        <div class="panel-title">ℹ️ Informace o Workspace</div>
-                    </div>
-                    <div id="workspaceInfo">
-                        <div class="loading">Načítání informací...</div>
-                    </div>
+                <div id="users-list">
+                    <!-- Seznam uživatelů -->
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Modální okna -->
-    <div class="modal" id="createProjectModal">
-        <div class="modal-content">
-            <h3>🚀 Vytvořit Nový Projekt</h3>
-            <form onsubmit="createProject(event)">
-                <div class="form-group">
-                    <label class="form-label">Název projektu</label>
-                    <input type="text" class="form-input" id="projectName" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Typ projektu</label>
-                    <select class="form-input" id="projectType">
-                        <option value="standard">Standardní</option>
-                        <option value="ai">AI Projekt</option>
-                        <option value="web">Webová aplikace</option>
-                        <option value="iot">IoT Projekt</option>
-                    </select>
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button type="submit" class="btn">Vytvořit Projekt</button>
-                    <button type="button" class="btn btn-danger" onclick="hideModal('createProjectModal')">Zrušit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="aiGeneratorModal">
-        <div class="modal-content">
-            <h3>🤖 AI Generátor Kódu</h3>
-            <div class="form-group">
-                <label class="form-label">Popište co chcete vygenerovat</label>
-                <textarea class="form-input" id="aiPrompt" rows="5" placeholder="Např.: Funkce pro čtení teplotního senzoru..."></textarea>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn" onclick="generateCode()">Generovat Kód</button>
-                <button class="btn btn-danger" onclick="hideModal('aiGeneratorModal')">Zrušit</button>
-            </div>
-            <div id="aiResult" style="margin-top: 20px; display: none;">
-                <pre style="background: var(--starko-dark); padding: 15px; border-radius: 10px; overflow: auto;"></pre>
-            </div>
-        </div>
+        {% endif %}
     </div>
 
     <script>
-        // Globální proměnné
-        let systemData = {};
-        let projects = [];
-        let performanceChart;
+        // INTERAKTIVITA - všechny panely reagují na kliknutí
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            loadSystemStatus();
+            loadProfiles();
+            setupChat();
+            {% if user.role == 'admin' %}loadUsers();{% endif %}
+            
+            // Rychlá aktualizace každé 2 sekundy
+            setInterval(loadSystemStatus, 2000);
+        });
 
-        // Načtení systémového statusu
+        function initializeDashboard() {
+            // Menu klikání
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Odstranit aktivní stav
+                    document.querySelectorAll('.menu-item').forEach(i => {
+                        i.style.background = 'transparent';
+                        i.style.borderLeftColor = 'transparent';
+                    });
+                    
+                    // Aktivovat vybrané
+                    this.style.background = 'rgba(255,255,255,0.1)';
+                    this.style.borderLeftColor = 'var(--success)';
+                    
+                    // Zobrazit příslušnou sekci
+                    const section = this.dataset.section;
+                    showSection(section);
+                });
+            });
+        }
+
+        function showSection(section) {
+            // Skrýt všechny sekce kromě dashboardu
+            const sections = ['users-section', 'profiles-section', 'performance-section', 'security-section', 'ai-section'];
+            sections.forEach(sec => {
+                const el = document.getElementById(sec);
+                if (el) el.style.display = 'none';
+            });
+            
+            // Zobrazit vybranou sekci
+            if (section !== 'dashboard') {
+                const targetSection = document.getElementById(section + '-section');
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+            }
+        }
+
         async function loadSystemStatus() {
             try {
                 const response = await fetch('/api/system/status');
-                systemData = await response.json();
-                updateSystemStats();
-                updateWorkspaceInfo();
+                const data = await response.json();
+                
+                // Aktualizovat UI
+                document.getElementById('cpu-value').textContent = data.cpu.toFixed(1) + '%';
+                document.getElementById('ram-value').textContent = data.ram.toFixed(1) + '%';
+                document.getElementById('temp-value').textContent = data.temperature.toFixed(1) + '°C';
+                document.getElementById('users-value').textContent = data.active_users;
+                
+                // Progress bary
+                document.querySelector('.cpu-progress').style.width = data.cpu + '%';
+                document.querySelector('.ram-progress').style.width = data.ram + '%';
+                
             } catch (error) {
-                console.error('Chyba při načítání statusu:', error);
+                console.error('Chyba:', error);
             }
         }
 
-        // Aktualizace systémových statistik
-        function updateSystemStats() {
-            if (!systemData.performance) return;
-
-            const perf = systemData.performance;
-            
-            // CPU
-            document.getElementById('cpuUsage').textContent = `${perf.cpu_usage}%`;
-            document.getElementById('cpuProgress').style.width = `${perf.cpu_usage}%`;
-            
-            // Memory
-            document.getElementById('memoryUsage').textContent = `${perf.memory_percent}%`;
-            document.getElementById('memoryProgress').style.width = `${perf.memory_percent}%`;
-            
-            // Disk
-            document.getElementById('diskUsage').textContent = `${perf.disk_percent}%`;
-            document.getElementById('diskProgress').style.width = `${perf.disk_percent}%`;
-            
-            // Temperature
-            const temp = systemData.temperature;
-            document.getElementById('temperature').textContent = temp ? `${temp}°C` : 'N/A';
-        }
-
-        // Načtení projektů
-        async function loadProjects() {
+        async function loadProfiles() {
             try {
-                const response = await fetch('/api/projects');
-                projects = await response.json();
-                updateProjectsList();
+                const response = await fetch('/api/profiles');
+                const profiles = await response.json();
+                
+                const container = document.getElementById('profiles-container');
+                container.innerHTML = '';
+                
+                profiles.forEach(profile => {
+                    const profileCard = document.createElement('div');
+                    profileCard.className = `profile-card clickable ${profile.active ? 'active' : ''}`;
+                    profileCard.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="font-size: 1.5rem;">${profile.icon}</div>
+                            <div style="flex: 1;">
+                                <h3 style="margin-bottom: 5px;">${profile.name}</h3>
+                                <p style="color: #b0b0b0; font-size: 0.9rem; margin-bottom: 8px;">${profile.description}</p>
+                                <span style="background: rgba(76, 201, 240, 0.2); color: var(--success); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem;">
+                                    ${profile.extensions} rozšíření
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    profileCard.onclick = () => activateProfile(profile.id);
+                    container.appendChild(profileCard);
+                });
+                
             } catch (error) {
-                console.error('Chyba při načítání projektů:', error);
+                console.error('Chyba:', error);
             }
         }
 
-        // Aktualizace seznamu projektů
-        function updateProjectsList() {
-            const container = document.getElementById('projectsList');
-            
-            if (projects.length === 0) {
-                container.innerHTML = '<div class="loading">Žádné projekty. Vytvořte první projekt!</div>';
-                return;
+        async function activateProfile(profileId) {
+            try {
+                const response = await fetch('/api/profiles/activate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({profile_id: profileId})
+                });
+                
+                if (response.ok) {
+                    loadProfiles();
+                    addChatMessage('bot', `Profil aktivován! 🎉`);
+                }
+            } catch (error) {
+                console.error('Chyba:', error);
             }
+        }
 
-            let html = '';
-            projects.forEach(project => {
-                html += `
-                    <div class="project-item">
-                        <div class="project-name">${project.name}</div>
-                        <div class="project-meta">
-                            Typ: ${project.type} | Vytvořeno: ${new Date(project.created_date).toLocaleDateString()}
-                        </div>
-                        <div style="margin-top: 10px; display: flex; gap: 10px;">
-                            <button class="btn" onclick="openProject('${project.name}')">Otevřít</button>
-                            <button class="btn btn-danger" onclick="deleteProject('${project.name}')">Smazat</button>
-                        </div>
-                    </div>
-                `;
+        function setupChat() {
+            const chatInput = document.getElementById('chat-input');
+            const sendButton = document.getElementById('send-message');
+            
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (!message) return;
+                
+                addChatMessage('user', message);
+                chatInput.value = '';
+                
+                // AI odpověď
+                fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: message})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    addChatMessage('bot', data.response);
+                });
+            }
+            
+            sendButton.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
             });
-            
-            container.innerHTML = html;
         }
 
-        // Aktualizace informací o workspace
-        function updateWorkspaceInfo() {
-            const container = document.getElementById('workspaceInfo');
-            if (!systemData.workspace) return;
-
-            const ws = systemData.workspace;
-            container.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <div><strong>Projektů:</strong> ${ws.total_projects}</div>
-                    <div><strong>Souborů:</strong> ${ws.total_files}</div>
-                    <div><strong>Velikost:</strong> ${ws.total_size_mb} MB</div>
-                    <div><strong>AI Modelů:</strong> ${ws.ai_models}</div>
-                    <div><strong>Scriptů:</strong> ${ws.scripts}</div>
+        function addChatMessage(sender, text) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'flex';
+            messageDiv.style.marginBottom = '10px';
+            messageDiv.style.flexDirection = sender === 'user' ? 'row-reverse' : 'row';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar" style="width: 25px; height: 25px; border-radius: 50%; background: ${sender === 'user' ? 'var(--primary)' : 'var(--success)'}; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; margin: 0 10px;">
+                    ${sender === 'user' ? 'Vy' : 'AI'}
+                </div>
+                <div class="message-content" style="background: ${sender === 'user' ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}; padding: 8px 12px; border-radius: 12px; max-width: 80%;">
+                    ${text}
                 </div>
             `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // Vytvoření nového projektu
-        async function createProject(event) {
-            event.preventDefault();
-            
-            const projectData = {
-                name: document.getElementById('projectName').value,
-                type: document.getElementById('projectType').value
-            };
-
+        {% if user.role == 'admin' %}
+        async function loadUsers() {
             try {
-                const response = await fetch('/api/projects', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(projectData)
+                const response = await fetch('/api/users');
+                const users = await response.json();
+                
+                const container = document.getElementById('users-list');
+                container.innerHTML = '<h3 style="margin-bottom: 15px;">Seznam uživatelů</h3>';
+                
+                users.forEach(user => {
+                    const userDiv = document.createElement('div');
+                    userDiv.style.cssText = `
+                        background: rgba(255,255,255,0.08);
+                        padding: 15px;
+                        border-radius: 10px;
+                        margin: 10px 0;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    `;
+                    userDiv.innerHTML = `
+                        <div>
+                            <strong>${user.username}</strong>
+                            <span style="margin-left: 10px; padding: 4px 8px; background: ${user.role === 'admin' ? 'var(--warning)' : 'var(--success)'}; border-radius: 8px; font-size: 0.8rem;">
+                                ${user.role}
+                            </span>
+                            <div style="font-size: 0.8rem; color: #a0a0a0; margin-top: 5px;">
+                                Vytvořeno: ${new Date(user.created_at).toLocaleDateString('cs-CZ')}
+                            </div>
+                        </div>
+                        <div>
+                            ${user.username !== '{{ user.username }}' ? 
+                                `<button onclick="deleteUser(${user.id})" style="padding: 8px 15px; background: var(--danger); border: none; border-radius: 6px; color: white; cursor: pointer;">
+                                    Smazat
+                                </button>` : 
+                                `<span style="color: var(--gray);">Aktivní uživatel</span>`
+                            }
+                        </div>
+                    `;
+                    container.appendChild(userDiv);
                 });
                 
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    alert(result.message);
-                    hideModal('createProjectModal');
-                    loadProjects();
-                } else {
-                    alert('Chyba: ' + result.message);
-                }
             } catch (error) {
-                alert('Chyba při vytváření projektu: ' + error);
+                console.error('Chyba:', error);
             }
         }
 
-        // Generování kódu AI
-        async function generateCode() {
-            const prompt = document.getElementById('aiPrompt').value;
-            if (!prompt) {
-                alert('Zadejte prompt pro AI!');
+        async function createUser() {
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-password').value;
+            const role = document.getElementById('new-role').value;
+
+            if (!username || !password) {
+                alert('Vyplňte všechny údaje');
                 return;
             }
 
             try {
-                const response = await fetch('/api/ai/generate-code', {
+                const response = await fetch('/api/users/create', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({prompt: prompt})
+                    body: JSON.stringify({username, password, role})
                 });
-                
+
                 const result = await response.json();
-                const resultDiv = document.getElementById('aiResult');
                 
-                if (result.status === 'success') {
-                    resultDiv.style.display = 'block';
-                    resultDiv.querySelector('pre').textContent = result.code;
+                if (response.ok) {
+                    document.getElementById('new-username').value = '';
+                    document.getElementById('new-password').value = '';
+                    loadUsers();
+                    addChatMessage('bot', `Uživatel ${username} vytvořen ✅`);
                 } else {
-                    alert('Chyba: ' + result.message);
+                    alert(result.error);
                 }
             } catch (error) {
-                alert('Chyba při generování: ' + error);
+                console.error('Chyba:', error);
             }
         }
 
-        // Instalace VS Code rozšíření
-        async function installVSCodeExtensions() {
-            if (!confirm('Nainstalovat všechna doporučená VS Code rozšíření?')) return;
+        async function deleteUser(userId) {
+            if (!confirm('Opravdu chcete smazat tohoto uživatele?')) return;
 
             try {
-                const response = await fetch('/api/vscode/install-extensions', {
+                const response = await fetch(`/api/users/${userId}/delete`, {
                     method: 'POST'
                 });
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    alert(`Rozšíření nainstalována: ${result.installed.length}/${result.total}\nChyby: ${result.failed.length}`);
+
+                if (response.ok) {
+                    loadUsers();
+                    addChatMessage('bot', 'Uživatel smazán ✅');
                 } else {
-                    alert('Chyba: ' + result.message);
+                    const error = await response.json();
+                    alert(error.error);
                 }
             } catch (error) {
-                alert('Chyba při instalaci rozšíření: ' + error);
+                console.error('Chyba:', error);
             }
         }
-
-        // Vytvoření zálohy
-        async function createBackup() {
-            try {
-                const response = await fetch('/api/workspace/backup', {
-                    method: 'POST'
-                });
-                
-                const result = await response.json();
-                alert(result.message);
-            } catch (error) {
-                alert('Chyba při vytváření zálohy: ' + error);
-            }
-        }
-
-        // Smazání projektu
-        async function deleteProject(projectName) {
-            if (!confirm(`Opravdu chcete smazat projekt "${projectName}"?`)) return;
-
-            try {
-                const response = await fetch(`/api/projects/${projectName}`, {
-                    method: 'DELETE'
-                });
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    alert(result.message);
-                    loadProjects();
-                } else {
-                    alert('Chyba: ' + result.message);
-                }
-            } catch (error) {
-                alert('Chyba při mazání projektu: ' + error);
-            }
-        }
-
-        // Správa modálních oken
-        function showModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
-        }
-
-        function hideModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        // Pomocné funkce
-        function openVSCode() {
-            alert('Otevírám VS Code... (funkce vyžaduje nastavení)');
-        }
-
-        function openTerminal() {
-            alert('Otevírám terminál...');
-        }
-
-        function runTests() {
-            alert('Spouštím testy...');
-        }
-
-        function openProject(projectName) {
-            alert(`Otevírám projekt ${projectName}...`);
-        }
-
-        // Inicializace
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSystemStatus();
-            loadProjects();
-            
-            // Automatická aktualizace každých 5 sekund
-            setInterval(loadSystemStatus, 5000);
-            
-            // Zavření modálního okna kliknutím mimo
-            document.addEventListener('click', function(event) {
-                if (event.target.classList.contains('modal')) {
-                    event.target.style.display = 'none';
-                }
-            });
-        });
+        {% endif %}
     </script>
 </body>
 </html>

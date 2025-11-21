@@ -58,8 +58,8 @@ Nové Web GUI obsahuje:
 
 Pokud potřebujete obnovit původní verzi:
 ```bash
-# Záloha je uložena v: /c/Users/Fatal/Desktop/VScode/RPI5/starko-rpi5-ai-workspace/backup_20251121_093827
-cp -r /c/Users/Fatal/Desktop/VScode/RPI5/starko-rpi5-ai-workspace/backup_20251121_093827/* ./
+# Záloha je uložena v: /c/Users/Fatal/Desktop/VScode/RPI5/starko-rpi5-ai-workspace/backup_20251121_162024
+cp -r /c/Users/Fatal/Desktop/VScode/RPI5/starko-rpi5-ai-workspace/backup_20251121_162024/* ./
 ```
 
 ## 📝 Poznámky k aktualizaci
@@ -72,6 +72,6 @@ cp -r /c/Users/Fatal/Desktop/VScode/RPI5/starko-rpi5-ai-workspace/backup_2025112
 ---
 
 **Starko AI Workspace 4.0**  
-Aktualizováno: 2025-11-21 09:39:02
+Aktualizováno: 2025-11-21 16:20:36
 
 *Tato aktualizace přidává pokročilý systém profilů pro lepší přizpůsobení workspace vašim potřebám.*
