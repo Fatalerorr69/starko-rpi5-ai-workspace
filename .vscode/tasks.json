@@ -1,0 +1,37 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "🚀 Starko: Nový AI Projekt",
+            "type": "shell",
+            "command": "python",
+            "args": ["projects/project_manager.py", "create", "--name", "${input:projectName}"],
+            "group": "build",
+            "presentation": {"echo": true, "reveal": "always"}
+        },
+        {
+            "label": "🔍 Starko: Spustit AI Testy",
+            "type": "shell", 
+            "command": "python",
+            "args": ["tests/ai_test_runner.py", "--project", "${input:projectName}"],
+            "group": "test",
+            "presentation": {"echo": true, "reveal": "always"}
+        },
+        {
+            "label": "🌐 Starko: Spustit Web GUI",
+            "type": "shell",
+            "command": "python",
+            "args": ["web_gui/app.py"],
+            "group": "build",
+            "presentation": {"echo": true, "reveal": "always"}
+        }
+    ],
+    "inputs": [
+        {
+            "id": "projectName",
+            "type": "promptString",
+            "description": "Název projektu:",
+            "default": "my_project"
+        }
+    ]
+}

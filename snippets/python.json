@@ -1,0 +1,29 @@
+{
+    "Python Header": {
+        "prefix": "pyheader",
+        "body": [
+            "#!/usr/bin/env python3",
+            "# -*- coding: utf-8 -*-",
+            "",
+            "\"\"\"",
+            "${1:Description}",
+            "",
+            "Author: ${2:Starko Master}",
+            "Created: ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
+            "Version: 1.0.0",
+            "\"\"\"",
+            "",
+            "import sys",
+            "import os",
+            "from pathlib import Path",
+            "",
+            "def main():",
+            "    \"\"\"Hlavní funkce\"\"\"",
+            "    print(\"🚀 Hello from Starko!\")",
+            "",
+            "if __name__ == \"__main__\":",
+            "    main()"
+        ],
+        "description": "Python script header with Starko style"
+    }
+}

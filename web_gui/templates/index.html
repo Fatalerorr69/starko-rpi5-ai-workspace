@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starko AI Workspace 4.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --danger: #e63946;
+            --dark: #1d3557;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4cc9f0, #f72585);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(76, 201, 240, 0.2);
+            border: 1px solid #4cc9f0;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 10px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+        
+        .profiles-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #4cc9f0;
+        }
+        
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .profile-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #4361ee;
+            transition: all 0.3s;
+        }
+        
+        .profile-card:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateX(5px);
+        }
+        
+        .profile-card.active {
+            border-left-color: #f72585;
+            background: rgba(247, 37, 133, 0.1);
+        }
+        
+        .profile-card h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .profile-card p {
+            color: #b0b0b0;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .extensions-count {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(76, 201, 240, 0.2);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #4cc9f0;
+        }
+        
+        .quick-actions {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(45deg, #4361ee, #3f37c9);
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .profiles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hlavička -->
+        <div class="header">
+            <h1>Starko AI Workspace 4.0</h1>
+            <div class="status-badge">
+                <i class="fas fa-check-circle"></i> ÚSPĚŠNĚ AKTUALIZOVÁNO
+            </div>
+            <p>Aktualizováno na verzi s pokročilým systémem profilů</p>
+            <div class="status-badge" style="background: rgba(247, 37, 133, 0.2); border-color: #f72585;">
+                <i class="fas fa-star"></i> Aktivní profil: Kompletná (full)
+            </div>
+        </div>
+        
+        <!-- Statistiky systému -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="cpu-value">57.5%</div>
+                <div class="stat-label">Využití CPU</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="ram-value">56.6%</div>
+                <div class="stat-label">Využití RAM</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="disk-value">87.2%</div>
+                <div class="stat-label">Využití Disku</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="profiles-count">9</div>
+                <div class="stat-label">Dostupných Profilů</div>
+            </div>
+        </div>
+        
+        <!-- Systém profilů -->
+        <div class="profiles-section">
+            <h2 class="section-title">Systém Profilů</h2>
+            <div class="profiles-grid" id="profiles-container">
+                <!-- Profily budou naplněny JavaScriptem -->
+            </div>
+        </div>
+        
+        <!-- Rychlé akce -->
+        <div class="quick-actions">
+            <h2 class="section-title">Rychlé Akce</h2>
+            <div class="actions-grid">
+                <button class="action-btn" onclick="activateProfile('ai')">
+                    <i class="fas fa-brain"></i> AI & ML Profil
+                </button>
+                <button class="action-btn" onclick="activateProfile('web')">
+                    <i class="fas fa-globe"></i> Web Profil
+                </button>
+                <button class="action-btn" onclick="activateProfile('iot')">
+                    <i class="fas fa-microchip"></i> IoT Profil
+                </button>
+                <button class="action-btn" onclick="activateProfile('full')">
+                    <i class="fas fa-rocket"></i> Kompletní Profil
+                </button>
+            </div>
+        </div>
+        
+        <!-- Patička -->
+        <div class="footer">
+            Starko AI Workspace 4.0 | Aktualizováno: <span id="current-date"></span>
+        </div>
+    </div>
+
+    <script>
+        // Data profilů podle obrázku
+        const profiles = [
+            {
+                id: "minimal",
+                name: "Minimální",
+                description: "Základní nástroje pro rychlý start",
+                extensions: 3,
+                active: false
+            },
+            {
+                id: "python",
+                name: "Python vývoj", 
+                description: "Kompletní prostředí pro Python vývoj",
+                extensions: 7,
+                active: false
+            },
+            {
+                id: "ai",
+                name: "AI a strojové učení",
+                description: "Specializované pro AI a ML projekty",
+                extensions: 8,
+                active: false
+            },
+            {
+                id: "web",
+                name: "Webový vývoj",
+                description: "Moderní webový vývoj", 
+                extensions: 7,
+                active: false
+            },
+            {
+                id: "iot",
+                name: "IoT a Raspberry Pi",
+                description: "Vývoj pro IoT a Raspberry Pi",
+                extensions: 7,
+                active: false
+            },
+            {
+                id: "gamedev", 
+                name: "Vývoj her",
+                description: "Pro vývoj her a grafiky",
+                extensions: 7,
+                active: false
+            },
+            {
+                id: "full",
+                name: "Kompletná (extrem)",
+                description: "Všechny nástroje a rozšíření má",
+                extensions: 23,
+                active: true
+            }
+        ];
+
+        // Naplnění profilů
+        function loadProfiles() {
+            const container = document.getElementById('profiles-container');
+            container.innerHTML = '';
+            
+            profiles.forEach(profile => {
+                const profileCard = document.createElement('div');
+                profileCard.className = `profile-card ${profile.active ? 'active' : ''}`;
+                profileCard.innerHTML = `
+                    <h3>${profile.name}</h3>
+                    <p>${profile.description}</p>
+                    <span class="extensions-count">${profile.extensions} rozšíření</span>
+                `;
+                profileCard.onclick = () => activateProfile(profile.id);
+                container.appendChild(profileCard);
+            });
+        }
+
+        // Aktivace profilu
+        function activateProfile(profileId) {
+            profiles.forEach(profile => {
+                profile.active = profile.id === profileId;
+            });
+            loadProfiles();
+            
+            // Zobrazit notifikaci
+            const profile = profiles.find(p => p.id === profileId);
+            if (profile) {
+                alert(`Profil "${profile.name}" byl aktivován!`);
+            }
+        }
+
+        // Aktualizace data
+        function updateDateTime() {
+            const now = new Date();
+            const dateString = now.toLocaleDateString('cs-CZ', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('current-date').textContent = dateString;
+        }
+
+        // Simulace živých dat
+        function updateStats() {
+            // CPU - mírné kolísání kolem 57.5%
+            const cpuValue = 57.5 + (Math.random() * 4 - 2);
+            document.getElementById('cpu-value').textContent = cpuValue.toFixed(1) + '%';
+            
+            // RAM - mírné kolísání kolem 56.6%
+            const ramValue = 56.6 + (Math.random() * 3 - 1.5);
+            document.getElementById('ram-value').textContent = ramValue.toFixed(1) + '%';
+            
+            // Disk - pomalu roste
+            const diskElement = document.getElementById('disk-value');
+            let diskValue = parseFloat(diskElement.textContent);
+            diskValue = Math.min(95, diskValue + (Math.random() * 0.1));
+            diskElement.textContent = diskValue.toFixed(1) + '%';
+        }
+
+        // Inicializace
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfiles();
+            updateDateTime();
+            
+            // Aktualizace statistik každých 5 sekund
+            setInterval(updateStats, 5000);
+            
+            // Aktualizace data každou minutu
+            setInterval(updateDateTime, 60000);
+        });
+    </script>
+</body>
+</html>

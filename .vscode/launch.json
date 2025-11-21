@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🐍 Starko: Debug Python",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "🧪 Starko: Spustit Testy",
+            "type": "python",
+            "request": "launch", 
+            "program": "tests/ai_test_runner.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "🌐 Starko: Web Server",
+            "type": "python",
+            "request": "launch",
+            "program": "web_gui/app.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}

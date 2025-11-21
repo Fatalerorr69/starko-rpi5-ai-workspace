@@ -1,0 +1,33 @@
+{
+  "recommendations": [
+    "ms-vscode.cpptools",
+    "ms-vscode.powershell", 
+    "eamodio.gitlens",
+    "donjayamanne.githistory",
+    "bierner.markdown-mermaid",
+    "ms-vscode.hexeditor",
+    "ms-vscode.makefile-tools",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "ms-toolsai.jupyter",
+    "ms-toolsai.vscode-jupyter-cell-tags",
+    "ms-toolsai.jupyter-renderers",
+    "ms-toolsai.jupyter-keymap",
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+    "oderwat.indent-rainbow",
+    "ms-azuretools.vscode-docker",
+    "shd101wyy.markdown-preview-enhanced",
+    "vscodevim.vim",
+    "ms-vscode.vscode-node-azure-pack",
+    "ms-vscode-remote.remote-containers",
+    "davidanson.vscode-markdownlint",
+    "foxundermoon.shell-format",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "bradlc.vscode-tailwindcss",
+    "esbenp.prettier-vscode",
+    "ms-vscode.live-server"
+  ]
+}

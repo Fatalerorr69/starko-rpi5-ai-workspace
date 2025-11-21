@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starko RPi5 AI Workspace - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        :root {
+            --starko-primary: #6F9CF4;
+            --starko-secondary: #4FC1FF;
+            --starko-accent: #D89CFF;
+            --starko-success: #8FCE6C;
+            --starko-warning: #FFB86C;
+            --starko-danger: #FF6B6B;
+            --starko-dark: #0D0F14;
+            --starko-darker: #0A0B0F;
+            --starko-light: #1A1D22;
+            --starko-lighter: #252A32;
+            --starko-text: #E4E8EF;
+            --starko-text-secondary: #AAB2C0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--starko-dark) 0%, var(--starko-darker) 100%);
+            color: var(--starko-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(26, 29, 34, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid var(--starko-lighter);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.8em;
+            background: linear-gradient(135deg, var(--starko-primary), var(--starko-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: var(--starko-text-secondary);
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--starko-light), var(--starko-lighter));
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--starko-primary), var(--starko-accent));
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+        
+        .stat-card.cpu::before { background: var(--starko-primary); }
+        .stat-card.memory::before { background: var(--starko-success); }
+        .stat-card.disk::before { background: var(--starko-warning); }
+        .stat-card.temperature::before { background: var(--starko-danger); }
+        
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--starko-text-secondary);
+            font-size: 0.9em;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .panel {
+            background: rgba(26, 29, 34, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid var(--starko-lighter);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--starko-text);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--starko-primary), var(--starko-secondary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(111, 156, 244, 0.3);
+        }
+        
+        .btn-success { background: linear-gradient(135deg, var(--starko-success), #6BCF7F); }
+        .btn-warning { background: linear-gradient(135deg, var(--starko-warning), #FFA94D); }
+        .btn-danger { background: linear-gradient(135deg, var(--starko-danger), #FF8787); }
+        
+        .projects-list {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .project-item {
+            background: var(--starko-light);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--starko-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .project-item:hover {
+            background: var(--starko-lighter);
+            transform: translateX(5px);
+        }
+        
+        .project-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .project-meta {
+            color: var(--starko-text-secondary);
+            font-size: 0.9em;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .action-btn {
+            background: var(--starko-light);
+            border: 1px solid var(--starko-lighter);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: var(--starko-lighter);
+            border-color: var(--starko-primary);
+            transform: translateY(-3px);
+        }
+        
+        .action-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--starko-light);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--starko-lighter);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--starko-text);
+            font-weight: 600;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--starko-lighter);
+            border-radius: 10px;
+            background: var(--starko-dark);
+            color: var(--starko-text);
+            font-size: 1em;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--starko-primary);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--starko-text-secondary);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--starko-dark);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--starko-primary), var(--starko-accent));
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Starko RPi5 AI Workspace</h1>
+            <div class="subtitle">Kompletní vývojové prostředí s AI integrací</div>
+            <div class="quick-actions">
+                <div class="action-btn" onclick="showModal('createProjectModal')">
+                    <div class="action-icon">➕</div>
+                    <div>Nový Projekt</div>
+                </div>
+                <div class="action-btn" onclick="installVSCodeExtensions()">
+                    <div class="action-icon">🔧</div>
+                    <div>Rozšíření</div>
+                </div>
+                <div class="action-btn" onclick="createBackup()">
+                    <div class="action-icon">💾</div>
+                    <div>Záloha</div>
+                </div>
+                <div class="action-btn" onclick="showModal('aiGeneratorModal')">
+                    <div class="action-icon">🤖</div>
+                    <div>AI Generátor</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="systemStats">
+            <div class="stat-card cpu">
+                <div class="stat-value" id="cpuUsage">0%</div>
+                <div class="stat-label">Využití CPU</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="cpuProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card memory">
+                <div class="stat-value" id="memoryUsage">0%</div>
+                <div class="stat-label">Využití RAM</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="memoryProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card disk">
+                <div class="stat-value" id="diskUsage">0%</div>
+                <div class="stat-label">Využití Disku</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="diskProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card temperature">
+                <div class="stat-value" id="temperature">0°C</div>
+                <div class="stat-label">Teplota CPU</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="main-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">📂 Projekty</div>
+                        <button class="btn" onclick="showModal('createProjectModal')">Nový Projekt</button>
+                    </div>
+                    <div class="projects-list" id="projectsList">
+                        <div class="loading">Načítání projektů...</div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">📊 Výkon Systému</div>
+                    </div>
+                    <div id="performanceChart" style="height: 300px;"></div>
+                </div>
+            </div>
+            
+            <div class="side-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">⚡ Rychlé Akce</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button class="btn" onclick="openVSCode()">🔮 Otevřít VS Code</button>
+                        <button class="btn btn-success" onclick="openTerminal()">💻 Otevřít Terminal</button>
+                        <button class="btn btn-warning" onclick="runTests()">🧪 Spustit Testy</button>
+                        <button class="btn btn-danger" onclick="showModal('settingsModal')">⚙️ Nastavení</button>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-title">ℹ️ Informace o Workspace</div>
+                    </div>
+                    <div id="workspaceInfo">
+                        <div class="loading">Načítání informací...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modální okna -->
+    <div class="modal" id="createProjectModal">
+        <div class="modal-content">
+            <h3>🚀 Vytvořit Nový Projekt</h3>
+            <form onsubmit="createProject(event)">
+                <div class="form-group">
+                    <label class="form-label">Název projektu</label>
+                    <input type="text" class="form-input" id="projectName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Typ projektu</label>
+                    <select class="form-input" id="projectType">
+                        <option value="standard">Standardní</option>
+                        <option value="ai">AI Projekt</option>
+                        <option value="web">Webová aplikace</option>
+                        <option value="iot">IoT Projekt</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn">Vytvořit Projekt</button>
+                    <button type="button" class="btn btn-danger" onclick="hideModal('createProjectModal')">Zrušit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="aiGeneratorModal">
+        <div class="modal-content">
+            <h3>🤖 AI Generátor Kódu</h3>
+            <div class="form-group">
+                <label class="form-label">Popište co chcete vygenerovat</label>
+                <textarea class="form-input" id="aiPrompt" rows="5" placeholder="Např.: Funkce pro čtení teplotního senzoru..."></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" onclick="generateCode()">Generovat Kód</button>
+                <button class="btn btn-danger" onclick="hideModal('aiGeneratorModal')">Zrušit</button>
+            </div>
+            <div id="aiResult" style="margin-top: 20px; display: none;">
+                <pre style="background: var(--starko-dark); padding: 15px; border-radius: 10px; overflow: auto;"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Globální proměnné
+        let systemData = {};
+        let projects = [];
+        let performanceChart;
+
+        // Načtení systémového statusu
+        async function loadSystemStatus() {
+            try {
+                const response = await fetch('/api/system/status');
+                systemData = await response.json();
+                updateSystemStats();
+                updateWorkspaceInfo();
+            } catch (error) {
+                console.error('Chyba při načítání statusu:', error);
+            }
+        }
+
+        // Aktualizace systémových statistik
+        function updateSystemStats() {
+            if (!systemData.performance) return;
+
+            const perf = systemData.performance;
+            
+            // CPU
+            document.getElementById('cpuUsage').textContent = `${perf.cpu_usage}%`;
+            document.getElementById('cpuProgress').style.width = `${perf.cpu_usage}%`;
+            
+            // Memory
+            document.getElementById('memoryUsage').textContent = `${perf.memory_percent}%`;
+            document.getElementById('memoryProgress').style.width = `${perf.memory_percent}%`;
+            
+            // Disk
+            document.getElementById('diskUsage').textContent = `${perf.disk_percent}%`;
+            document.getElementById('diskProgress').style.width = `${perf.disk_percent}%`;
+            
+            // Temperature
+            const temp = systemData.temperature;
+            document.getElementById('temperature').textContent = temp ? `${temp}°C` : 'N/A';
+        }
+
+        // Načtení projektů
+        async function loadProjects() {
+            try {
+                const response = await fetch('/api/projects');
+                projects = await response.json();
+                updateProjectsList();
+            } catch (error) {
+                console.error('Chyba při načítání projektů:', error);
+            }
+        }
+
+        // Aktualizace seznamu projektů
+        function updateProjectsList() {
+            const container = document.getElementById('projectsList');
+            
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="loading">Žádné projekty. Vytvořte první projekt!</div>';
+                return;
+            }
+
+            let html = '';
+            projects.forEach(project => {
+                html += `
+                    <div class="project-item">
+                        <div class="project-name">${project.name}</div>
+                        <div class="project-meta">
+                            Typ: ${project.type} | Vytvořeno: ${new Date(project.created_date).toLocaleDateString()}
+                        </div>
+                        <div style="margin-top: 10px; display: flex; gap: 10px;">
+                            <button class="btn" onclick="openProject('${project.name}')">Otevřít</button>
+                            <button class="btn btn-danger" onclick="deleteProject('${project.name}')">Smazat</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Aktualizace informací o workspace
+        function updateWorkspaceInfo() {
+            const container = document.getElementById('workspaceInfo');
+            if (!systemData.workspace) return;
+
+            const ws = systemData.workspace;
+            container.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div><strong>Projektů:</strong> ${ws.total_projects}</div>
+                    <div><strong>Souborů:</strong> ${ws.total_files}</div>
+                    <div><strong>Velikost:</strong> ${ws.total_size_mb} MB</div>
+                    <div><strong>AI Modelů:</strong> ${ws.ai_models}</div>
+                    <div><strong>Scriptů:</strong> ${ws.scripts}</div>
+                </div>
+            `;
+        }
+
+        // Vytvoření nového projektu
+        async function createProject(event) {
+            event.preventDefault();
+            
+            const projectData = {
+                name: document.getElementById('projectName').value,
+                type: document.getElementById('projectType').value
+            };
+
+            try {
+                const response = await fetch('/api/projects', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(projectData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert(result.message);
+                    hideModal('createProjectModal');
+                    loadProjects();
+                } else {
+                    alert('Chyba: ' + result.message);
+                }
+            } catch (error) {
+                alert('Chyba při vytváření projektu: ' + error);
+            }
+        }
+
+        // Generování kódu AI
+        async function generateCode() {
+            const prompt = document.getElementById('aiPrompt').value;
+            if (!prompt) {
+                alert('Zadejte prompt pro AI!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/ai/generate-code', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({prompt: prompt})
+                });
+                
+                const result = await response.json();
+                const resultDiv = document.getElementById('aiResult');
+                
+                if (result.status === 'success') {
+                    resultDiv.style.display = 'block';
+                    resultDiv.querySelector('pre').textContent = result.code;
+                } else {
+                    alert('Chyba: ' + result.message);
+                }
+            } catch (error) {
+                alert('Chyba při generování: ' + error);
+            }
+        }
+
+        // Instalace VS Code rozšíření
+        async function installVSCodeExtensions() {
+            if (!confirm('Nainstalovat všechna doporučená VS Code rozšíření?')) return;
+
+            try {
+                const response = await fetch('/api/vscode/install-extensions', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert(`Rozšíření nainstalována: ${result.installed.length}/${result.total}\nChyby: ${result.failed.length}`);
+                } else {
+                    alert('Chyba: ' + result.message);
+                }
+            } catch (error) {
+                alert('Chyba při instalaci rozšíření: ' + error);
+            }
+        }
+
+        // Vytvoření zálohy
+        async function createBackup() {
+            try {
+                const response = await fetch('/api/workspace/backup', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                alert('Chyba při vytváření zálohy: ' + error);
+            }
+        }
+
+        // Smazání projektu
+        async function deleteProject(projectName) {
+            if (!confirm(`Opravdu chcete smazat projekt "${projectName}"?`)) return;
+
+            try {
+                const response = await fetch(`/api/projects/${projectName}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    alert(result.message);
+                    loadProjects();
+                } else {
+                    alert('Chyba: ' + result.message);
+                }
+            } catch (error) {
+                alert('Chyba při mazání projektu: ' + error);
+            }
+        }
+
+        // Správa modálních oken
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Pomocné funkce
+        function openVSCode() {
+            alert('Otevírám VS Code... (funkce vyžaduje nastavení)');
+        }
+
+        function openTerminal() {
+            alert('Otevírám terminál...');
+        }
+
+        function runTests() {
+            alert('Spouštím testy...');
+        }
+
+        function openProject(projectName) {
+            alert(`Otevírám projekt ${projectName}...`);
+        }
+
+        // Inicializace
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemStatus();
+            loadProjects();
+            
+            // Automatická aktualizace každých 5 sekund
+            setInterval(loadSystemStatus, 5000);
+            
+            // Zavření modálního okna kliknutím mimo
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal')) {
+                    event.target.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

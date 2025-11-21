@@ -1,0 +1,12 @@
+{
+    "iconDefinitions": {
+        "_starko_folder": {
+            "iconPath": "./images/starko-folder.png"
+        },
+        "_starko_file": {
+            "iconPath": "./images/starko-file.png"
+        }
+    },
+    "folder": "_starko_folder",
+    "file": "_starko_file"
+}

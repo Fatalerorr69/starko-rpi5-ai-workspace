@@ -1,0 +1,8 @@
+{
+    "id": "web",
+    "name": "Webový vývoj",
+    "description": "Profil Webový vývoj",
+    "version": "1.0.0",
+    "created": "2025-11-21T09:38:59+01:00",
+    "compatibility": ["linux", "windows", "macos"]
+}

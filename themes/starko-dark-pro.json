@@ -1,0 +1,79 @@
+{
+  "$schema": "vscode://schemas/color-theme",
+  "name": "Starko Dark Pro",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#0D0F14",
+    "editor.foreground": "#E4E8EF",
+
+    "editorCursor.foreground": "#6F9CF4",
+    "editor.selectionBackground": "#25324A",
+    "editor.inactiveSelectionBackground": "#1b2433",
+    "editor.lineHighlightBackground": "#1A1D22",
+
+    "editorLineNumber.foreground": "#4C566A",
+    "editorLineNumber.activeForeground": "#8FBCBB",
+
+    "activityBar.background": "#11131A",
+    "activityBar.foreground": "#E4E8EF",
+    "activityBar.activeBorder": "#6F9CF4",
+
+    "sideBar.background": "#13151D",
+    "sideBarTitle.foreground": "#AAB2C0",
+
+    "statusBar.background": "#0F1117",
+    "statusBar.foreground": "#C9D1D9",
+
+    "tab.activeBackground": "#1C2027",
+    "tab.inactiveBackground": "#11131A",
+    "tab.activeForeground": "#E4E8EF",
+    "tab.inactiveForeground": "#6A707A",
+
+    "terminal.background": "#0D0F14",
+    "terminal.foreground": "#C9D1D9",
+
+    "button.background": "#1B3A75",
+    "button.foreground": "#FFFFFF",
+    "button.hoverBackground": "#274B97"
+  },
+
+  "tokenColors": [
+    {
+      "scope": "comment",
+      "settings": {
+        "foreground": "#5C6773",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "scope": "keyword",
+      "settings": {
+        "foreground": "#6F9CF4"
+      }
+    },
+    {
+      "scope": "string",
+      "settings": {
+        "foreground": "#8FCE6C"
+      }
+    },
+    {
+      "scope": "variable",
+      "settings": {
+        "foreground": "#E4E8EF"
+      }
+    },
+    {
+      "scope": "constant.numeric",
+      "settings": {
+        "foreground": "#D89CFF"
+      }
+    },
+    {
+      "scope": "entity.name.function",
+      "settings": {
+        "foreground": "#4FC1FF"
+      }
+    }
+  ]
+}

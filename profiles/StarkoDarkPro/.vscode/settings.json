@@ -1,0 +1,27 @@
+{
+  "workbench.colorTheme": "Starko Dark Pro",
+  "workbench.iconTheme": "starko-icons",
+  "editor.fontFamily": "'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.5,
+  "editor.minimap.enabled": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.guides.bracketPairs": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.semanticHighlighting.enabled": true,
+  "breadcrumbs.enabled": true,
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.fontFamily": "'Cascadia Code'",
+  "workbench.productIconTheme": "fluent-icons",
+  "vscode_custom_css.imports": [
+    "file://${workspaceFolder}/.vscode/custom.css"
+  ]
+}
