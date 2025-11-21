@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"workbench.colorTheme": "Starko Dark Pro",
+		"workbench.iconTheme": "material-icon-theme",
+		"workbench.productIconTheme": "StarkoIcons",
+		"workbench.colorCustomizations": {
+			"activityBar.background": "#11131A",
+			"activityBar.foreground": "#E4E8EF",
+			"statusBar.background": "#0F1117"
+		},
+		"terminal.integrated.fontFamily": "'Cascadia Code'",
+		"localaipilot.general.inlineSuggestions": true
+	}
+}
