@@ -23,5 +23,10 @@
   "rpi.autoDeploy": true,
   "rpi.simulationMode": true,
   "ai.enabled": true,
-  "localaipilot.general.inlineSuggestions": true
+  "localaipilot.general.inlineSuggestions": true,
+  "python.testing.pytestArgs": [
+    "scripts"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
