@@ -22,5 +22,6 @@
   "starko.version": "4.0.0",
   "rpi.autoDeploy": true,
   "rpi.simulationMode": true,
-  "ai.enabled": true
+  "ai.enabled": true,
+  "localaipilot.general.inlineSuggestions": true
 }
